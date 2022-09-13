@@ -1,9 +1,13 @@
+// Copyright 2021-2022 Contributors to the Veraison project.
+// SPDX-License-Identifier: Apache-2.0
 package main
 
 import (
-	"github.com/hashicorp/go-plugin"
+	plugin "github.com/hashicorp/go-plugin"
 	"github.com/veraison/services/scheme"
 )
+
+type Scheme struct{}
 
 func main() {
 	var handshakeConfig = plugin.HandshakeConfig{
@@ -14,7 +18,8 @@ func main() {
 
 	var pluginMap = map[string]plugin.Plugin{
 		"scheme": &scheme.Plugin{
-			Impl: &Scheme{},
+			// TODO: Find the Scheme class to implement
+			//Impl: &Scheme{},
 		},
 	}
 
