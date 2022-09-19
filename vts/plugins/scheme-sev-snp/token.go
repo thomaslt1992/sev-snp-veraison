@@ -2,33 +2,42 @@ package main
 
 import (
 	"crypto/ecdsa"
+
+	"github.com/google/go-tpm/tpm2"
 )
 
 // Token is the container for the decoded token in SEV-SNP environment
 type Token struct {
-	tcb_version       TcbVersion
-	attestationReport AttestationReport
-	signature         Signature
+	attestationReport ExtendedAttestationReport
+	signature         *tpm2.Signature
 }
 
-type extended_attestation_report struct {
+type ExtendedAttestationReport struct {
 	report AttestationReport
-	cert   Certificate
+	VCEK   CertificateTable
+	ASK    CertificateTable
+	ARK    CertificateTable
 }
 
-type Certificate struct {
-	a int
-}
-
-type TcbVersion struct {
-	TcbUnion struct {
-		boot_loader *uint8
-		tee         *uint8
-		reserved    [4]*uint8
-		snp         *uint8
-		microcode   *uint8
+type CertificateTable struct {
+	Certificate struct {
+		guid   [16]uint32
+		offset uint32
+		length uint32
 	}
-	raw uint64
+	certificateTableEmpty []uint32
+}
+
+//TODO: Check the Union it must be either struct or a raw
+type TcbVersion struct {
+	TcbUnion *struct {
+		boot_loader uint8
+		tee         uint8
+		reserved    [4]uint8
+		snp         uint8
+		microcode   uint8
+	}
+	raw *uint64
 }
 
 type AttestationReport struct {
@@ -54,13 +63,7 @@ type AttestationReport struct {
 	reserved1         [24]uint8
 	chip_id           [64]uint8
 	reserved2         [192]uint8
-	signature         Signature
-}
-
-type Signature struct {
-	r        [72]uint8
-	s        [72]uint8
-	reserved [512 - 144]uint8
+	signature         *tpm2.Signature
 }
 
 type MsgReportResponse struct {
@@ -72,8 +75,4 @@ type MsgReportResponse struct {
 
 func (t Token) VerifySignature(key *ecdsa.PublicKey) error {
 	return nil
-}
-
-func (t Token) Decode(data []byte) error {
-
 }
