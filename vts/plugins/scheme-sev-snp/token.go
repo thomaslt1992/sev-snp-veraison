@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/ecdsa"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"time"
@@ -45,29 +46,29 @@ type TcbVersion struct {
 }
 
 type AttestationReport struct {
-	version           uint32
-	guest_svn         uint32
-	policy            uint64
-	family_id         [16]uint8
-	image_id          [16]uint8
-	vpml              uint32
-	signatureAlgo     uint32
-	platform_version  TcbVersion
-	platform_info     uint64
-	flags             uint32
-	reserved0         uint32
-	report_data       [64]uint8
-	measurement       [48]uint8
-	host_data         [32]uint8
-	id_key_digest     [48]uint8
-	author_key_digest [48]uint8
-	report_id         [32]uint8
-	report_id_ma      [32]uint8
-	reported_tcb      TcbVersion
-	reserved1         [24]uint8
-	chip_id           [64]uint8
-	reserved2         [192]uint8
-	signature         *tpm2.Signature
+	version          uint32
+	guest_svn        uint32
+	policy           uint64
+	familyId         [16]uint8
+	imageId          [16]uint8
+	vpml             uint32
+	signatureAlgo    uint32
+	platform_version TcbVersion
+	platform_info    uint64
+	flags            uint32
+	reserved0        uint32
+	ReportData       [64]uint8
+	measurement      [48]uint8
+	hostData         [32]uint8
+	idKeyDigest      [48]uint8
+	authorKeyDigest  [48]uint8
+	reportId         [32]uint8
+	reportIdMa       [32]uint8
+	reportedTcb      TcbVersion
+	reserved1        [24]uint8
+	chipId           [64]uint8
+	reserved2        [192]uint8
+	signature        *tpm2.Signature
 }
 
 type MsgReportResponse struct {
@@ -81,7 +82,28 @@ func (t Token) VerifySignature(key *ecdsa.PublicKey) error {
 	return nil
 }
 
+type Message struct {
+	A string
+	C int
+	D []string
+}
+
+func printJson(j Message) {
+	fmt.Printf("A %v\n", j.A)
+	fmt.Printf("C %v\n", j.C)
+	fmt.Printf("D %v\n", j.D)
+}
+
 func main() {
+	var b = []byte(`{"a":"b","c":1,"d":["e","f"]}`)
+	var j Message
+	err := json.Unmarshal(b, &j)
+	if err != nil {
+		return
+	}
+
+	printJson(j)
+
 	// Verifying with a custom list of root certificates.
 
 	const rootPEM = `
@@ -160,5 +182,11 @@ yE+vPxsiUkvQHdO2fojCkY8jg70jxM+gu59tPDNbw3Uh/2Ij310FgTHsnGQMyA==
 
 	if _, err := cert.Verify(opts); err != nil {
 		panic("failed to verify certificate: " + err.Error())
+	}
+}
+
+func DecodeAttestationData(j map[string]interface{}) {
+	for k, v := range j {
+		fmt.Printf("%v %v\n", k, v)
 	}
 }
