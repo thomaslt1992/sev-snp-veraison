@@ -18,5 +18,8 @@ enum AttestationFormat {
 
 	// TPM EnactTrust
 	TPM_ENACTTRUST = 3;
+
+	SEV_SNP = 4;
+	
 }
 
