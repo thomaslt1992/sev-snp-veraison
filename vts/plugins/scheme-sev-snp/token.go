@@ -29,11 +29,11 @@ type TcbVersion struct {
 	// either a struct is given as input or a raw string
 	// The allocation of memory is handled with the pointer
 	TcbUnion *struct {
-		boot_loader uint8
-		tee         uint8
-		reserved    [4]uint8
-		snp         uint8
-		microcode   uint8
+		bootLoader uint8
+		tee        uint8
+		reserved   [4]uint8
+		snp        uint8
+		microcode  uint8
 	}
 	raw *uint64
 }
