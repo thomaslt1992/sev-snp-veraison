@@ -19,14 +19,9 @@ type Token struct {
 
 type ExtendedAttestationReport struct {
 	report AttestationReport
-	VCEK   CertificateTable
-	ASK    CertificateTable
-	ARK    CertificateTable
-}
-
-type CertificateTable struct {
-	certificate           x509.Certificate
-	certificateTableEmpty []uint32
+	VCEK   x509.Certificate
+	ASK    x509.Certificate
+	ARK    x509.Certificate
 }
 
 type TcbVersion struct {
@@ -47,7 +42,7 @@ type TcbVersion struct {
 
 type AttestationReport struct {
 	version          uint32
-	guest_svn        uint32
+	guestSvn         uint32
 	policy           uint64
 	familyId         [16]uint8
 	imageId          [16]uint8
@@ -68,7 +63,6 @@ type AttestationReport struct {
 	reserved1        [24]uint8
 	chipId           [64]uint8
 	reserved2        [192]uint8
-	signature        *tpm2.Signature
 }
 
 type MsgReportResponse struct {
@@ -102,7 +96,7 @@ func main() {
 		return
 	}
 
-	printJson(j)
+	//printJson(j)
 
 	// Verifying with a custom list of root certificates.
 
@@ -173,7 +167,7 @@ yE+vPxsiUkvQHdO2fojCkY8jg70jxM+gu59tPDNbw3Uh/2Ij310FgTHsnGQMyA==
 	if err != nil {
 		panic("failed to parse certificate: " + err.Error())
 	}
-	fmt.Println(time.Now())
+
 	opts := x509.VerifyOptions{
 		DNSName:     "mail.google.com",
 		Roots:       roots,
