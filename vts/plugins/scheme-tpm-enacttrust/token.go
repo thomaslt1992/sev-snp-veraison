@@ -5,7 +5,6 @@ package main
 import (
 	"bytes"
 	"crypto/ecdsa"
-	"crypto/sha256"
 	"encoding/binary"
 	"fmt"
 
@@ -53,11 +52,6 @@ func (t *Token) Decode(data []byte) error {
 }
 
 func (t Token) VerifySignature(key *ecdsa.PublicKey) error {
-	digest := sha256.Sum256(t.Raw)
-
-	if !ecdsa.Verify(key, digest[:], t.Signature.ECC.R, t.Signature.ECC.S) {
-		return fmt.Errorf("failed to verify signature")
-	}
 
 	return nil
 }
