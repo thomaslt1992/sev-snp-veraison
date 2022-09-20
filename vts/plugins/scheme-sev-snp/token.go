@@ -3,10 +3,8 @@ package main
 import (
 	"crypto/ecdsa"
 	"crypto/x509"
-	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"time"
 
 	"github.com/google/go-tpm/tpm2"
 )
@@ -76,27 +74,7 @@ func (t Token) VerifySignature(key *ecdsa.PublicKey) error {
 	return nil
 }
 
-type Message struct {
-	A string
-	C int
-	D []string
-}
-
-func printJson(j Message) {
-	fmt.Printf("A %v\n", j.A)
-	fmt.Printf("C %v\n", j.C)
-	fmt.Printf("D %v\n", j.D)
-}
-
 func main() {
-	var b = []byte(`{"a":"b","c":1,"d":["e","f"]}`)
-	var j Message
-	err := json.Unmarshal(b, &j)
-	if err != nil {
-		return
-	}
-
-	//printJson(j)
 
 	// Verifying with a custom list of root certificates.
 
@@ -169,9 +147,9 @@ yE+vPxsiUkvQHdO2fojCkY8jg70jxM+gu59tPDNbw3Uh/2Ij310FgTHsnGQMyA==
 	}
 
 	opts := x509.VerifyOptions{
-		DNSName:     "mail.google.com",
-		Roots:       roots,
-		CurrentTime: time.Date(2014, 2, 2, 12, 12, 12, 12, time.UTC),
+		DNSName: "kdsintf.amd.com",
+		Roots:   roots,
+		//CurrentTime: time.Date(2014, 2, 2, 12, 12, 12, 12, time.UTC),
 	}
 
 	if _, err := cert.Verify(opts); err != nil {
