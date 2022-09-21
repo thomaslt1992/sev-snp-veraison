@@ -59,6 +59,7 @@ func main() {
 		fmt.Printf("\tSignature verification error: %+v\n", err1)
 	} else {
 		fmt.Println("Ask certificate signature by Ark verified")
+		log.Printf("...Verification success...")
 	}
 
 }
