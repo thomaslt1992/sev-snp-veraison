@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/binary"
 	"encoding/pem"
+	"errors"
 	"fmt"
 
 	"github.com/google/go-tpm/tpm2"
@@ -99,10 +102,37 @@ func main() {
 	}
 }
 
-func DecodeAttestationData(j map[string]interface{}) {
-	for k, v := range j {
-		fmt.Printf("%v %v\n", k, v)
+func (t *Token) Decode(data []byte) error {
+	if len(data) < 3 {
+		return fmt.Errorf("Could not get the data size; token too small (%d)", len(data))
 	}
+
+	size := binary.BigEndian.Uint16(data[:2])
+	if len(data) < int(2+size) {
+		return fmt.Errorf("SEV-SNP appears truncated; expected %d, but got %d",
+			size, len(data)-2)
+	}
+
+	var err error
+
+	t.Raw = data[2 : 2+size]
+	t.AttestationReport, err = DecodeAttestationReport(t.Raw)
+
+	t.Signature, err = tpm2.DecodeSignature(bytes.NewBuffer(data[2+size:]))
+	if err != nil {
+		return fmt.Errorf("Could not decode the Signature %v", err)
+	}
+
+	return nil
+}
+
+func (t *Token) DecodeAttestationReport(data []byte) (attestData AttestationReport, err error) {
+	// This is the decoding process of our Attestation
+	// based on the evidence we will gather from Sev-guest tool
+	// format will be modified accordingly to the results received
+	var error error = errors.New("Nothing yet")
+	attestData = AttestationReport{}
+	return attestData, error
 }
 
 func (t Token) VerifySignature(key *ecdsa.PublicKey) error {

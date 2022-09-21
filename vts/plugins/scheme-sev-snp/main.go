@@ -46,7 +46,7 @@ func (s Scheme) GetTrustAnchorID(token *proto.AttestationToken) (string, error) 
 		)
 	}
 
-	var decoded extended_attestation_report
+	var decoded ExtendedAttestationReport
 
 	if err := decoded.Decode(token.Data); err != nil {
 		return "", err

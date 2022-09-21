@@ -56,9 +56,8 @@ func main() {
 
 	err1 := certAsk.CheckSignatureFrom(certArk)
 	if err != nil {
-		fmt.Printf("\tSignature verification error: %+v\n", err1)
+		log.Printf("\tSignature verification error: %+v\n", err1)
 	} else {
-		fmt.Println("Ask certificate signature by Ark verified")
 		log.Printf("...Verification success...")
 	}
 
