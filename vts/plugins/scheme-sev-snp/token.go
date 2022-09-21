@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/ecdsa"
+	"crypto/sha256"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
@@ -11,8 +12,9 @@ import (
 
 // Token is the container for the decoded token in SEV-SNP environment
 type Token struct {
-	attestationReport ExtendedAttestationReport
-	signature         *tpm2.Signature
+	AttestationReport ExtendedAttestationReport
+	Signature         *tpm2.Signature
+	Raw               []byte
 }
 
 type ExtendedAttestationReport struct {
@@ -70,10 +72,6 @@ type MsgReportResponse struct {
 	report      AttestationReport
 }
 
-func (t Token) VerifySignature(key *ecdsa.PublicKey) error {
-	return nil
-}
-
 func main() {
 
 	roots := x509.NewCertPool()
@@ -105,4 +103,14 @@ func DecodeAttestationData(j map[string]interface{}) {
 	for k, v := range j {
 		fmt.Printf("%v %v\n", k, v)
 	}
+}
+
+func (t Token) VerifySignature(key *ecdsa.PublicKey) error {
+	digest := sha256.Sum256(t.Raw)
+
+	if !ecdsa.Verify(key, digest[:], t.Signature.ECC.R, t.Signature.ECC.S) {
+		return fmt.Errorf("Failed to verify th signature")
+	}
+
+	return nil
 }
