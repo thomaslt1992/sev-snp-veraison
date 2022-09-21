@@ -42,4 +42,23 @@ func main() {
 		fmt.Printf("\tIPAddresses: %+v\n", cert.IPAddresses)
 	}
 
+	certAsk, err := x509.ParseCertificate(blocks[0])
+	if err != nil {
+		fmt.Println(err)
+
+	}
+
+	certArk, err := x509.ParseCertificate(blocks[1])
+	if err != nil {
+		fmt.Println(err)
+
+	}
+
+	err1 := certAsk.CheckSignatureFrom(certArk)
+	if err != nil {
+		fmt.Printf("\tSignature verification error: %+v\n", err1)
+	} else {
+		fmt.Println("Ask certificate signature by Ark verified")
+	}
+
 }
