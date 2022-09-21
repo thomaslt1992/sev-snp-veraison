@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	certPEMBlock, err := ioutil.ReadFile("Milan.pem")
+	certPEMBlock, err := ioutil.ReadFile("Certificates_HardCoded/Milan.pem")
 	if err != nil {
 		log.Fatal(err)
 	}
